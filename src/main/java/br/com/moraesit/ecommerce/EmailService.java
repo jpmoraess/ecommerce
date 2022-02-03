@@ -1,14 +1,21 @@
 package br.com.moraesit.ecommerce;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.serialization.StringDeserializer;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class EmailService {
 
     public static void main(String[] args) {
         var emailService = new EmailService();
-        try (var service = new KafkaService<>(EmailService.class.getSimpleName(), "ECOMMERCE_SEND_EMAIL", emailService::parse, String.class)) {
+        try (var service = new KafkaService(EmailService.class.getSimpleName(),
+                "ECOMMERCE_SEND_EMAIL",
+                emailService::parse,
+                String.class,
+                Map.of(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName()))) {
             service.run();
         }
     }
